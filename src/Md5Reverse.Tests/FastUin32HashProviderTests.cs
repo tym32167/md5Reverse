@@ -7,6 +7,21 @@ namespace Md5Reverse.Tests
     public class FastUin32HashProviderTests
     {
         [Test]
+        public void CorrectnessUint32_Single()
+        {
+            var alg = new FastUin32HashProvider();
+            var stand = new StandardHashProvider();
+
+            uint item = 256 + 512 + 32;// UInt32.MaxValue / 2;
+
+            var expected = stand.ComputeUIntHash(item);
+            var actual = alg.ComputeUIntHash(item);
+            Assert.AreEqual(expected, actual);
+
+        }
+
+
+        [Test]
         public void CorrectnessUint32()
         {
             var alg = new FastUin32HashProvider();
