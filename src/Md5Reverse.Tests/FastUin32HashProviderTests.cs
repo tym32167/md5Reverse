@@ -18,6 +18,12 @@ namespace Md5Reverse.Tests
             var actual = alg.ComputeUIntHash(item);
             Assert.AreEqual(expected, actual);
 
+
+
+            expected = stand.ComputeUIntHash(item / 2);
+            actual = alg.ComputeUIntHash(item / 2);
+            Assert.AreEqual(expected, actual);
+
         }
 
 

@@ -52,8 +52,7 @@ namespace Md5Reverse.Lib
                 Parts[i] = (byte)res;
             }
 
-            var md5 = new MD5CryptoServiceProvider();
-            var hash = md5.ComputeHash(Parts);
+            var hash = Md5.ComputeHash(Parts);
 
             return hash;
         }

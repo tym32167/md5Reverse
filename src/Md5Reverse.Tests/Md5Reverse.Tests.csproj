@@ -46,11 +46,16 @@
     <Compile Include="CompareMd5ProvidersTests.cs" />
     <Compile Include="FastUin32HashProviderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UIntBitArrayTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Md5Reverse.Console\Md5Reverse.Console.csproj">
+      <Project>{A9F0EF15-9B24-44EB-B704-C067C0DB6FBF}</Project>
+      <Name>Md5Reverse.Console</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Md5Reverse.Lib\Md5Reverse.Lib.csproj">
       <Project>{E5EF7B92-AF67-4E83-B4A3-2BCE618BCE8C}</Project>
       <Name>Md5Reverse.Lib</Name>

@@ -7,8 +7,8 @@ namespace Md5Reverse.Lib
 {
     public class FastUin32HashProvider : IMd5Provider
     {
-        private static readonly byte[] Parts = { 0x42, 0x45, 0, 0, 0, 0, 0, 0, 0, 0 };
-        private static readonly MD5Managed Md5 = new MD5Managed();
+        //private static readonly byte[] Parts = { 0x42, 0x45, 0, 0, 0, 0, 0, 0, 0, 0 };
+        //private static readonly MD5Managed Md5 = new MD5Managed();
 
         public uint ComputeUIntHash(uint input)
         {
@@ -21,20 +21,22 @@ namespace Md5Reverse.Lib
             // http://steamcommunity.com/profiles/7656119xxxxxxxxxx 
             // http://steamcommunity.com/profiles/76561198053877632
 
-            Parts[0] = 0x42;
-            Parts[1] = 0x45;
+            byte[] parts =
+            {
+                0x42,
+                0x45,
+                (byte)(input << 24 >> 24),
+                (byte)(input << 16 >> 24),
+                (byte)(input << 8 >> 24),
+                (byte)(input << 0 >> 24),
+                1,
+                0,
+                16,
+                1
+            };
 
-            Parts[2] = (byte)(input << 24 >> 24);
-            Parts[3] = (byte)(input << 16 >> 24);
-            Parts[4] = (byte)(input << 8 >> 24);
-            Parts[5] = (byte)(input << 0 >> 24);
-
-            Parts[6] = 1;
-            Parts[7] = 0;
-            Parts[8] = 16;
-            Parts[9] = 1;
-
-            var hash = Md5.ComputeHash(Parts);
+            var md5 = new MD5Managed();
+            var hash = md5.ComputeHash(parts);
 
             return hash;
         }
@@ -43,8 +45,6 @@ namespace Md5Reverse.Lib
         {
             throw new System.NotImplementedException();
         }
-
-
 
         /// taken from http://dlaa.me/blog/post/9380245
         /// <summary>
@@ -238,39 +238,39 @@ namespace Md5Reverse.Lib
             }
 
             /* F, G, H and I are basic MD5 functions. */
-            private static uint F(uint x, uint y, uint z) { return (((x) & (y)) | ((~x) & (z))); }
-            private static uint G(uint x, uint y, uint z) { return (((x) & (z)) | ((y) & (~z))); }
-            private static uint H(uint x, uint y, uint z) { return ((x) ^ (y) ^ (z)); }
-            private static uint I(uint x, uint y, uint z) { return ((y) ^ ((x) | (~z))); }
+            private static uint F(uint x, uint y, uint z) { return (x & y) | (~x & z); }
+            private static uint G(uint x, uint y, uint z) { return (x & z) | (y & ~z); }
+            private static uint H(uint x, uint y, uint z) { return x ^ y ^ z; }
+            private static uint I(uint x, uint y, uint z) { return y ^ (x | ~z); }
 
             /* ROTATE_LEFT rotates x left n bits. */
-            private static uint ROTATE_LEFT(uint x, int n) { return (((x) << (n)) | ((x) >> (32 - (n)))); }
+            private static uint ROTATE_LEFT(uint x, int n) { return (x << n) | (x >> (32 - n)); }
 
             /* FF, GG, HH, and II transformations for rounds 1, 2, 3, and 4.
                Rotation is separate from addition to prevent recomputation. */
             private static void FF(ref uint a, uint b, uint c, uint d, uint x, int s, uint ac)
             {
-                (a) += F((b), (c), (d)) + (x) + (uint)(ac);
-                (a) = ROTATE_LEFT((a), (s));
-                (a) += (b);
+                a += F(b, c, d) + x + ac;
+                a = ROTATE_LEFT(a, s);
+                a += b;
             }
             private static void GG(ref uint a, uint b, uint c, uint d, uint x, int s, uint ac)
             {
-                (a) += G((b), (c), (d)) + (x) + (uint)(ac);
-                (a) = ROTATE_LEFT((a), (s));
-                (a) += (b);
+                a += G(b, c, d) + x + ac;
+                a = ROTATE_LEFT(a, s);
+                a += b;
             }
             private static void HH(ref uint a, uint b, uint c, uint d, uint x, int s, uint ac)
             {
-                (a) += H((b), (c), (d)) + (x) + (uint)(ac);
-                (a) = ROTATE_LEFT((a), (s));
-                (a) += (b);
+                a += H(b, c, d) + x + ac;
+                a = ROTATE_LEFT(a, s);
+                a += b;
             }
             private static void II(ref uint a, uint b, uint c, uint d, uint x, int s, uint ac)
             {
-                (a) += I((b), (c), (d)) + (x) + (uint)(ac);
-                (a) = ROTATE_LEFT((a), (s));
-                (a) += (b);
+                a += I(b, c, d) + x + ac;
+                a = ROTATE_LEFT(a, s);
+                a += b;
             }
 
             /* MD5 initialization. Begins an MD5 operation, writing a new context. */
@@ -294,34 +294,27 @@ namespace Md5Reverse.Lib
                 uint inputLen)    /* length of input block */
             {
                 /* Compute number of bytes mod 64 */
-                uint index = (uint)((context.count[0] >> 3) & 0x3F);
+                uint index = (context.count[0] >> 3) & 0x3F;
 
                 /* Update number of bits */
-                if ((context.count[0] += ((uint)inputLen << 3)) < ((uint)inputLen << 3))
+                if ((context.count[0] += inputLen << 3) < inputLen << 3)
                 {
                     context.count[1]++;
                 }
-                context.count[1] += ((uint)inputLen >> 29);
+                context.count[1] += inputLen >> 29;
 
                 uint partLen = 64 - index;
 
                 /* Transform as many times as possible. */
-                uint i = 0;
                 if (inputLen >= partLen)
                 {
                     Buffer.BlockCopy(input, (int)inputIndex, context.buffer, (int)index, (int)partLen);
                     MD5Transform(context.state, context.buffer, 0);
-
-                    for (i = partLen; i + 63 < inputLen; i += 64)
-                    {
-                        MD5Transform(context.state, input, inputIndex + i);
-                    }
-
                     index = 0;
                 }
 
                 /* Buffer remaining input */
-                Buffer.BlockCopy(input, (int)(inputIndex + i), context.buffer, (int)index, (int)(inputLen - i));
+                Buffer.BlockCopy(input, (int)inputIndex, context.buffer, (int)index, (int)inputLen);
             }
 
             /* MD5 finalization. Ends an MD5 message-digest operation, writing the
@@ -329,15 +322,16 @@ namespace Md5Reverse.Lib
             private static void MD5Final(byte[] digest,    /* message digest */
                 MD5_CTX context)  /* context */
             {
-                byte[] bits = new byte[8];
+                byte[] bits = { 80, 0, 0, 0, 0, 0, 0, 0 };
 
                 /* Save number of bits */
-                Encode(bits, context.count, 8);
+                //Encode(bits, context.count, 8);
 
                 /* Pad out to 56 mod 64. */
-                uint index = (uint)((context.count[0] >> 3) & 0x3f);
-                uint padLen = (index < 56) ? (56 - index) : (120 - index);
-                MD5Update(context, PADDING, 0, padLen);
+                //uint index = (context.count[0] >> 3) & 0x3f;
+                //uint padLen = index < 56 ? 56 - index : 120 - index;
+
+                MD5Update(context, PADDING, 0, 46);
 
                 /* Append length (before padding) */
                 MD5Update(context, bits, 0, 8);
@@ -427,14 +421,14 @@ namespace Md5Reverse.Lib
                 II(ref c, d, a, b, x[6], S43, 0xa3014314); /* 59 */
                 II(ref b, c, d, a, x[13], S44, 0x4e0811a1); /* 60 */
                 II(ref a, b, c, d, x[4], S41, 0xf7537e82); /* 61 */
-                II(ref d, a, b, c, x[11], S42, 0xbd3af235); /* 62 */
-                II(ref c, d, a, b, x[2], S43, 0x2ad7d2bb); /* 63 */
-                II(ref b, c, d, a, x[9], S44, 0xeb86d391); /* 64 */
+                //II(ref d, a, b, c, x[11], S42, 0xbd3af235); /* 62 */
+                //II(ref c, d, a, b, x[2], S43, 0x2ad7d2bb); /* 63 */
+                //II(ref b, c, d, a, x[9], S44, 0xeb86d391); /* 64 */
 
                 state[0] += a;
-                state[1] += b;
-                state[2] += c;
-                state[3] += d;
+                //state[1] += b;
+                //state[2] += c;
+                //state[3] += d;
 
                 /* Zeroize sensitive information. */
                 Array.Clear(x, 0, x.Length);
@@ -464,10 +458,10 @@ namespace Md5Reverse.Lib
             {
                 for (uint i = 0, j = 0; j < len; i++, j += 4)
                 {
-                    output[i] = ((uint)input[inputIndex + j]) |
-                                (((uint)input[inputIndex + j + 1]) << 8) |
-                                (((uint)input[inputIndex + j + 2]) << 16) |
-                                (((uint)input[inputIndex + j + 3]) << 24);
+                    output[i] = input[inputIndex + j] |
+                                ((uint)input[inputIndex + j + 1] << 8) |
+                                ((uint)input[inputIndex + j + 2] << 16) |
+                                ((uint)input[inputIndex + j + 3] << 24);
                 }
             }
         }

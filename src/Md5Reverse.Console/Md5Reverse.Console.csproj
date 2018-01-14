@@ -44,9 +44,16 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Uint32ToTiont32AllHashesFileGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Md5Reverse.Lib\Md5Reverse.Lib.csproj">
+      <Project>{E5EF7B92-AF67-4E83-B4A3-2BCE618BCE8C}</Project>
+      <Name>Md5Reverse.Lib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

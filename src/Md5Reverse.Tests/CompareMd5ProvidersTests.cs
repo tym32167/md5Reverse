@@ -1,7 +1,6 @@
 ﻿using Md5Reverse.Lib;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
-using System;
 using System.Diagnostics;
 
 namespace Md5Reverse.Tests
@@ -10,6 +9,7 @@ namespace Md5Reverse.Tests
     public class CompareMd5ProvidersTests
     {
         [Test]
+        [Ignore("")]
         public void CompareUintHash()
         {
             var alg = new FastUin32HashProvider();
@@ -35,8 +35,21 @@ namespace Md5Reverse.Tests
             sw.Stop();
             var standElapsed = sw.Elapsed;
 
-            Console.WriteLine($"fast: {algElapsed}, stand: {standElapsed}");
+            System.Console.WriteLine($"fast: {algElapsed}, stand: {standElapsed}");
             Assert.True(standElapsed > algElapsed, $"{nameof(algElapsed)} should be faster than {nameof(standElapsed)}");
+        }
+
+
+        [Test]
+        public void CompareUintHash_fast_performance()
+        {
+            var alg = new FastUin32HashProvider();
+            uint iterations = 1000000;
+
+            for (uint i = 0; i <= iterations; i++)
+            {
+                alg.ComputeUIntHash(i);
+            }
         }
     }
 }
