@@ -44,12 +44,18 @@ namespace Md5Reverse.Tests
         public void CompareUintHash_fast_performance()
         {
             var alg = new FastUin32HashProvider();
-            uint iterations = 1000000;
+            uint iterations = 6000;
+            var sw = new Stopwatch();
 
+            sw.Start();
             for (uint i = 0; i <= iterations; i++)
             {
                 alg.ComputeUIntHash(i);
             }
+            sw.Stop();
+            var algElapsed = sw.Elapsed;
+
+            System.Console.WriteLine($"fast: {algElapsed}");
         }
     }
 }
