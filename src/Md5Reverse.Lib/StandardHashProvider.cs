@@ -18,9 +18,6 @@ namespace Md5Reverse.Lib
 
         public byte[] ComputeByteHash(uint input)
         {
-            // http://steamcommunity.com/profiles/7656119xxxxxxxxxx 
-            // http://steamcommunity.com/profiles/76561198053877632
-
             Parts[0] = 0x42;
             Parts[1] = 0x45;
 
@@ -29,14 +26,12 @@ namespace Md5Reverse.Lib
             Parts[4] = (byte)(input << 8 >> 24);
             Parts[5] = (byte)(input << 0 >> 24);
 
-
             Parts[6] = 1;
             Parts[7] = 0;
             Parts[8] = 16;
             Parts[9] = 1;
 
             var hash = Md5.ComputeHash(Parts);
-
             return hash;
         }
 
@@ -53,7 +48,6 @@ namespace Md5Reverse.Lib
             }
 
             var hash = Md5.ComputeHash(Parts);
-
             return hash;
         }
     }

@@ -7,8 +7,8 @@ namespace Md5Reverse.Lib
 {
     public class FastUin32HashProvider : IMd5Provider
     {
-        //private static readonly byte[] Parts = { 0x42, 0x45, 0, 0, 0, 0, 0, 0, 0, 0 };
-        //private static readonly MD5Managed Md5 = new MD5Managed();
+        private static readonly byte[] Parts = { 0x42, 0x45, 0, 0, 0, 0, 1, 0, 16, 1 };
+        private static readonly MD5Managed Md5 = new MD5Managed();
 
         public uint ComputeUIntHash(uint input)
         {
@@ -18,26 +18,20 @@ namespace Md5Reverse.Lib
 
         public byte[] ComputeByteHash(uint input)
         {
-            // http://steamcommunity.com/profiles/7656119xxxxxxxxxx 
-            // http://steamcommunity.com/profiles/76561198053877632
+            Parts[0] = 0x42;
+            Parts[1] = 0x45;
 
-            byte[] parts =
-            {
-                0x42,
-                0x45,
-                (byte)(input << 24 >> 24),
-                (byte)(input << 16 >> 24),
-                (byte)(input << 8 >> 24),
-                (byte)(input << 0 >> 24),
-                1,
-                0,
-                16,
-                1
-            };
+            Parts[2] = (byte)(input << 24 >> 24);
+            Parts[3] = (byte)(input << 16 >> 24);
+            Parts[4] = (byte)(input << 8 >> 24);
+            Parts[5] = (byte)(input << 0 >> 24);
 
-            var md5 = new MD5Managed();
-            var hash = md5.ComputeHash(parts);
+            Parts[6] = 1;
+            Parts[7] = 0;
+            Parts[8] = 16;
+            Parts[9] = 1;
 
+            var hash = Md5.ComputeHash(Parts);
             return hash;
         }
 

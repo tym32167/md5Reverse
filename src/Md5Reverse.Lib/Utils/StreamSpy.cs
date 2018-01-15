@@ -17,7 +17,7 @@ namespace Md5Reverse.Lib.Utils
         public override void Flush()
         {
             _inner.Flush();
-            _log.Info("Flush!");
+            _log.Debug("Flush!");
         }
 
         public override long Seek(long offset, SeekOrigin origin)
@@ -32,14 +32,14 @@ namespace Md5Reverse.Lib.Utils
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            _log.Info($"READ bufer {buffer.Length}, ofset {offset}, count {count}, POSITION: {Position}");
+            _log.Debug($"READ bufer {buffer.Length}, offset {offset}, count {count}, POSITION: {Position}");
             return _inner.Read(buffer, offset, count);
         }
 
         public override void Write(byte[] buffer, int offset, int count)
         {
             _inner.Write(buffer, offset, count);
-            _log.Info($"WRITE bufer {buffer.Length}, ofset {offset}, count {count}");
+            _log.Debug($"WRITE bufer {buffer.Length}, offset {offset}, count {count}");
         }
 
         public override bool CanRead => _inner.CanRead;
@@ -48,8 +48,8 @@ namespace Md5Reverse.Lib.Utils
         public override long Length => _inner.Length;
         public override long Position
         {
-            get { return _inner.Position; }
-            set { _inner.Position = value; }
+            get => _inner.Position;
+            set => _inner.Position = value;
         }
     }
 }
