@@ -1,5 +1,5 @@
-﻿using System.IO;
-using Md5Reverse.Lib.Core;
+﻿using Md5Reverse.Lib.Core;
+using System.IO;
 
 namespace Md5Reverse.Lib.Utils
 {
@@ -19,6 +19,37 @@ namespace Md5Reverse.Lib.Utils
             return new BinaryWriter(new BufferedStream(
                 new StreamSpy(
                     File.OpenWrite(path), log), bufferLen));
+        }
+
+
+        public static StreamSpy WithSpy(this Stream source, ILog log)
+        {
+            return new StreamSpy(source, log);
+        }
+
+        public static BufferedStream Buffered(this Stream source, int bufferLen = BufferLen)
+        {
+            return new BufferedStream(source, bufferLen);
+        }
+
+        public static BinaryWriter ToBinaryWriter(this Stream stream)
+        {
+            return new BinaryWriter(stream);
+        }
+
+        public static BinaryReader ToBinaryReader(this Stream stream)
+        {
+            return new BinaryReader(stream);
+        }
+
+        public static FileStream CreateReader(this string src)
+        {
+            return File.OpenRead(src);
+        }
+
+        public static FileStream CreateWriter(this string src)
+        {
+            return File.OpenWrite(src);
         }
     }
 }

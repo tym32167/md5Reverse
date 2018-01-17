@@ -9,7 +9,7 @@ namespace Md5Reverse.Tests
     public class CompareMd5ProvidersTests
     {
         [Test]
-        [Ignore("")]
+        [Ignore("useless performance test")]
         public void CompareUintHash()
         {
             var alg = new FastUin32HashProvider();

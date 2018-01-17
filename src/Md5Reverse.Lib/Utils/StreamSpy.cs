@@ -32,14 +32,14 @@ namespace Md5Reverse.Lib.Utils
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            _log.Debug($"READ bufer {buffer.Length}, offset {offset}, count {count}, POSITION: {Position}");
+            _log.Debug($"READ buffer {buffer.Length}, offset {offset}, count {count}, POSITION: {Position}");
             return _inner.Read(buffer, offset, count);
         }
 
         public override void Write(byte[] buffer, int offset, int count)
         {
             _inner.Write(buffer, offset, count);
-            _log.Debug($"WRITE bufer {buffer.Length}, offset {offset}, count {count}");
+            _log.Debug($"WRITE buffer {buffer.Length}, offset {offset}, count {count}");
         }
 
         public override bool CanRead => _inner.CanRead;
@@ -50,6 +50,21 @@ namespace Md5Reverse.Lib.Utils
         {
             get => _inner.Position;
             set => _inner.Position = value;
+        }
+
+        public override void Close()
+        {
+            base.Close();
+            _inner.Close();
+
+            _log.Info("CLOSE");
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            _inner.Dispose();
+            _log.Info("DISPOSE");
         }
     }
 }
