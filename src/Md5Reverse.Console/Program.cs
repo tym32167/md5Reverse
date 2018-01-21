@@ -27,9 +27,81 @@ namespace Md5Reverse.Console
 
 
             var log = new Log();
-            var md5 = new FastUin32HashProvider();
-            var generator = new Uint32ToTiont32AllHashesFileGenerator(md5, log);
-            generator.GenerateFile(@"G:\temp\FinalVariant2");
+            var md5 = new StandardHashProvider();
+
+            var searcher = new IdByHashSearcher(@"G:\temp\FinalVariant3\step5\ids.bin", @"G:\temp\FinalVariant3\step5\index.bin", md5, log);
+
+            //var ids = File.ReadAllLines(@"G:\temp\testdata.txt");
+            //var result = searcher.Search(ids);
+            //File.WriteAllLines(@"G:\temp\idsAndHashes.txt", result.Select(x => $"{x.Key}|{x.Value}"));
+
+
+
+            searcher.Search(new[] { "00020000ca27ac810c1a5ff984dc8e69" });
+            searcher.Search(new[] { "73f07ef50e3d97aa376c56795481c341" });
+
+
+
+            //var log = new Log();
+            //var md5 = new OptimizedHashProvider();
+            //var generator = new Uint32ToTiont32AllHashesFileGenerator(md5, log);
+            //generator.GenerateFile(@"G:\temp\FinalVariant3");
+
+
+            //TestIndexes();
+        }
+
+        private static void TestIndexes()
+        {
+            var md5 = new OptimizedHashProvider();
+            var log = new Log();
+            var indexes = IdByHashSearcher.GetCache(@"G:\temp\FinalVariant3\step5\index.bin");
+
+            var idsFile = @"G:\temp\FinalVariant3\step5\ids.bin";
+
+            uint position = 0;
+
+            log.Info("Starting...");
+
+
+            using (var idReader = idsFile.CreateReader().WithSpy(log).Buffered().ToBinaryReader())
+            {
+                while (idReader.BaseStream.Position < idReader.BaseStream.Length)
+                {
+                    var id = idReader.ReadUInt32();
+                    var hash = md5.ComputeByteHash(id);
+
+                    var ind = hash[0] * 256 * 256 + hash[1] * 256 + hash[2];
+
+                    var idxPos = indexes[ind];
+
+                    if (position < idxPos)
+                    {
+                        log.Info($"-------- OMG {position} / {idxPos}");
+                        return;
+                    }
+
+                    if (ind < indexes.Length - 1)
+                    {
+                        var idxPosNext = indexes[ind + 1];
+
+                        if (idxPosNext <= position)
+                        {
+                            log.Info($"-------- OMG idxPosNext {position} / {idxPosNext}");
+                            return;
+                        }
+                    }
+
+                    position++;
+
+
+                    if ((position + 1) / 10000000 > position / 10000000)
+                    {
+                        var percent = position * 100.0 / uint.MaxValue;
+                        log.Info($"Percent done: {percent}, current: {position}");
+                    }
+                }
+            }
         }
 
 

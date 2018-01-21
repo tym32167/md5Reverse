@@ -45,7 +45,9 @@
   <ItemGroup>
     <Compile Include="CompareMd5ProvidersTests.cs" />
     <Compile Include="FastUin32HashProviderTests.cs" />
+    <Compile Include="OptimizedHashProviderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Uint32ToTiont32AllHashesFileGeneratorTests.cs" />
     <Compile Include="UIntBitArrayTests.cs" />
   </ItemGroup>
   <ItemGroup>

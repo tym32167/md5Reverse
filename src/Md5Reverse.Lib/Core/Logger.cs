@@ -16,7 +16,10 @@ namespace Md5Reverse.Lib.Core
     {
         public void Debug(object message)
         {
+//#if DEBUG
+
             System.Console.WriteLine($"{DateTime.UtcNow:T} Debug: {message}");
+//#endif
         }
 
         public void Info(object message)
