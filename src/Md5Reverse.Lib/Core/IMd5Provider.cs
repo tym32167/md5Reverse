@@ -6,4 +6,10 @@
         byte[] ComputeByteHash(uint input);
         byte[] ComputeByteHash(long input);
     }
+
+
+    public interface IMd5ProviderFactory
+    {
+        IMd5Provider Create();
+    }
 }

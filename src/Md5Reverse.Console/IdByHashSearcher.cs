@@ -10,17 +10,13 @@ namespace Md5Reverse.Console
     public class IdByHashSearcher
     {
         private readonly string _idsFile;
-        private readonly string _indexFile;
         private readonly IMd5Provider _md5Provider;
         private readonly ILog _log;
-
-        private Lazy<uint[]> _cache;
-
+        private readonly Lazy<uint[]> _cache;
 
         public IdByHashSearcher(string idsFile, string indexFile, IMd5Provider md5Provider, ILog log)
         {
             _idsFile = idsFile;
-            _indexFile = indexFile;
             _md5Provider = md5Provider;
             _log = log;
 
@@ -28,7 +24,7 @@ namespace Md5Reverse.Console
             {
                 using (_log.Timing("Creating cache"))
                 {
-                    return GetCache(_indexFile);
+                    return GetCache(indexFile);
                 }
             });
         }
@@ -59,12 +55,8 @@ namespace Md5Reverse.Console
             return result;
         }
 
-
-        //private readonly byte[] _buffer = new byte[4 * 1400];
         long lmin = 0x0110000100000000;
-
-
-        private long Search(string shash, uint[] cache, BinaryReader reader, HashSet<string> idsHashSet, Dictionary<string, long> result)
+        private void Search(string shash, uint[] cache, BinaryReader reader, HashSet<string> idsHashSet, Dictionary<string, long> result)
         {
             var hash = FromString(shash);
             var ind = hash[0] * 256 * 256 + hash[1] * 256 + hash[2];
@@ -79,7 +71,7 @@ namespace Md5Reverse.Console
             {
                 var id = reader.ReadUInt32();
                 var ui = id + lmin;
-                var midhash = _md5Provider.ComputeByteHash(ui);
+                var midhash = _md5Provider.ComputeByteHash(id);
 
                 var str = ToString(midhash);
 
@@ -88,32 +80,7 @@ namespace Md5Reverse.Console
                     result.Add(str, ui);
                     idsHashSet.Remove(str);
                 }
-
-
-                //if (CompareTo(hash, midhash) == 0) return ui;
             }
-
-            //var len = reader.Read(_buffer, 0, _buffer.Length);
-
-            //for (var i = 0; i < len; i += 4)
-            //{
-            //    var ui = BitConverter.ToUInt32(_buffer, i) + lmin;
-            //    var midhash = _md5Provider.ComputeByteHash(ui);
-            //    if (CompareTo(hash, midhash) == 0) return ui;
-            //}
-
-            return 0;
-        }
-
-        private static int CompareTo(byte[] s1, byte[] s2)
-        {
-            for (int i = 0; i < s1.Length; i++)
-            {
-                if (s1[i] > s2[i]) return 1;
-                if (s1[i] < s2[i]) return -1;
-            }
-
-            return 0;
         }
 
         private static bool IsGuid(string str)
@@ -128,16 +95,16 @@ namespace Md5Reverse.Console
             return true;
         }
 
-        public static byte[] FromString(String hex)
+        private static byte[] FromString(String hex)
         {
-            int numberChars = hex.Length;
-            byte[] bytes = new byte[numberChars / 2];
-            for (int i = 0; i < numberChars; i += 2)
+            var numberChars = hex.Length;
+            var bytes = new byte[numberChars / 2];
+            for (var i = 0; i < numberChars; i += 2)
                 bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
             return bytes;
         }
 
-        public static string ToString(byte[] hash)
+        private static string ToString(byte[] hash)
         {
             var result = "";
             foreach (var b in hash)
@@ -146,8 +113,7 @@ namespace Md5Reverse.Console
             return result;
         }
 
-
-        internal static uint[] GetCache(string indexFile)
+        private static uint[] GetCache(string indexFile)
         {
             var cache = new uint[256 * 256 * 256];
 
