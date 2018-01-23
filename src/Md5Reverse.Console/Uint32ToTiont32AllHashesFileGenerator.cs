@@ -140,9 +140,9 @@ namespace Md5Reverse.Console
                         CreateMathes(filebuffer, inputLen, indexes);
 
                         Clear(fileIndexes);
-                        CreateMathes(filebuffer, inputLen, fileIndexes);
+                        CreateMathes(filebuffer, inputLen, fileIndexes, 1);
                         CreateIndexes(fileIndexes);
-                        SortByHash(filebuffer, tempBuffer, inputLen, fileIndexes);
+                        SortByHash(filebuffer, tempBuffer, inputLen, fileIndexes, 1);
 
                         for (var j = 0; j < inputLen; j += 8)
                             idsWriter.Write(tempBuffer, j + 4, 4);
@@ -184,7 +184,7 @@ namespace Md5Reverse.Console
             }
         }
 
-        internal static void CreateMathes(byte[] inputBytes, int inputLen, uint[] indexes)
+        internal static void CreateMathes(byte[] inputBytes, int inputLen, uint[] indexes, int baseoffset = 0)
         {
             var rowCount = inputLen / 8;
 
@@ -192,24 +192,24 @@ namespace Md5Reverse.Console
             {
                 var inpInd = j * 8;
 
-                var i1 = inputBytes[inpInd];
-                var i2 = inputBytes[inpInd + 1];
-                var i3 = inputBytes[inpInd + 2];
+                var i1 = inputBytes[inpInd + baseoffset];
+                var i2 = inputBytes[inpInd + 1 + baseoffset];
+                var i3 = inputBytes[inpInd + 2 + baseoffset];
 
                 indexes[i1 * 256 * 256 + i2 * 256 + i3]++;
             }
         }
 
-        internal static void SortByHash(byte[] inputBytes, byte[] tempBuffer, int inputLen, uint[] indexes)
+        internal static void SortByHash(byte[] inputBytes, byte[] tempBuffer, int inputLen, uint[] indexes, int baseoffset = 0)
         {
             var rowCount = inputLen / 8;
             for (uint j = 0; j < rowCount; j++)
             {
                 var inpInd = j * 8;
 
-                var i1 = inputBytes[inpInd];
-                var i2 = inputBytes[inpInd + 1];
-                var i3 = inputBytes[inpInd + 2];
+                var i1 = inputBytes[inpInd + baseoffset];
+                var i2 = inputBytes[inpInd + 1 + baseoffset];
+                var i3 = inputBytes[inpInd + 2 + baseoffset];
 
                 var nextInd = indexes[i1 * 256 * 256 + i2 * 256 + i3];
                 Copy(inputBytes, tempBuffer, inpInd, nextInd);

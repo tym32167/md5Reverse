@@ -9,7 +9,7 @@ namespace Md5Reverse.Console
         static void Main(string[] args)
         {
             //SearchMd5Test();
-            //GenerateFiles();
+            GenerateFiles();
         }
 
         private static void SearchMd5Test()
